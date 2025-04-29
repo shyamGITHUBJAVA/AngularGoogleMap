@@ -1,12 +1,16 @@
 
 <!-- google-maps-demo.component.html -->
-<google-map height="400px"
-            width="750px"
-            [center]="center"
-            [zoom]="zoom"
-            (mapClick)="moveMap($event)"
-            (mapMousemove)="move($event)">
-</google-map>
-
+<div style="margin-top: 15px;">
+    <input type="text" #from placeholder="From Location">
+    <input type="text" #to placeholder="To Location">
+    <button (click)="getDistance(from.value, to.value)">Get Distance</button>
+  </div>
+  
+<div #mapContainer id="map" style="height: 400px; width: 750px;"></div>
 <div>Latitude: {{display?.lat}}</div>
 <div>Longitude: {{display?.lng}}</div>
+
+
+  <!-- Distance and Duration Output -->
+  <div *ngIf="distanceText">{{distanceText}}</div> 
+  <div *ngIf="durationText">{{durationText}}</div>
