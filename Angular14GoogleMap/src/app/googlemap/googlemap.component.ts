@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { environment } from '../../environments/environment';
 
 
 @Component({
@@ -26,7 +27,13 @@ export class GooglemapComponent implements OnInit, AfterViewInit {
   ngOnInit(): void { }
 
   ngAfterViewInit(): void {
-    this.initMap();
+    this.loadGoogleMapsScript()
+      .then(() => {
+        this.initMap();
+      })
+      .catch((error) => {
+        console.error('Error loading Google Maps script:', error);
+      });
   }
 
   moveMap(event: google.maps.MapMouseEvent) {
@@ -49,6 +56,24 @@ export class GooglemapComponent implements OnInit, AfterViewInit {
     this.directionsRenderer = new google.maps.DirectionsRenderer();
     this.directionsRenderer.setMap(this.map);
   }
+
+  loadGoogleMapsScript(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if ((window as any).google && (window as any).google.maps) {
+        // Script already loaded
+        resolve();
+      } else {
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${environment.apiKey}&libraries=visualization`;
+        script.async = true;
+        script.defer = true;
+        script.onload = () => resolve();
+        script.onerror = (error: any) => reject(error);
+        document.head.appendChild(script);
+      }
+    });
+  }
+  
 
   getDistance(from: string, to: string): void {
     if (!from || !to) {
